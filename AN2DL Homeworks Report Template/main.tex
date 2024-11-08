@@ -1,0 +1,173 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{lipsum}
+\usepackage{multicol}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\usepackage[left=2.00cm, right=2.00cm, top=2.00cm, bottom=2.00cm]{geometry}
+
+\title{AN2DL Reports Template}
+
+\begin{document}
+    
+    \begin{figure}[H]
+        \raggedright
+        \includegraphics[scale=0.4]{polimi.png} \hfill \includegraphics[scale=0.3]{airlab.jpeg}
+    \end{figure}
+    
+    \vspace{5mm}
+    
+    \begin{center}
+        % Select between First and Second
+        {\Large \textbf{AN2DL - First/Second Homework Report}}\\
+        \vspace{2mm}
+        % Change with your Team Name
+        {\Large \textbf{Team Name}}\\
+        \vspace{2mm}
+        % Team Members Information
+        {\large Name1 Surname1,}
+        {\large Name2 Surname2,}
+        {\large Name3 Surname3,}
+        {\large Name4 Surname4}\\
+        \vspace{2mm}
+        % Codabench Nicknames
+        {Codabench Nickname1,}
+        {Codabench Nickname2,}
+        {Codabench Nickname3,}
+        {Codabench Nickname4}\\
+        \vspace{2mm}
+        % Matriculation Numbers
+        {Matricola1,}
+        {Matricola2,}
+        {Matricola3,}
+        {Matricola4}\\
+        \vspace{5mm}
+        \today
+    \end{center}    
+    \vspace{5mm}
+    
+    \begin{multicols}{2}
+        \noindent \textit{Note: The following sections represent a suggested structure. Feel free to adapt them to better suit your specific project needs.}
+        
+        \section{Introduction}
+        In this section, you should present your project's context and objectives. You might want to:
+        \begin{itemize}
+            \item Define the problem (\textit{you may use italics to highlight definitions})
+            \item State your goals (\textbf{emphasise key points with bold})
+            \item Outline your approach
+        \end{itemize}
+
+        \noindent For instance, you might write: ``This project focuses on \textit{image classification} using \textbf{deep learning} techniques."
+        
+        \section{Problem Analysis}
+        Here you can discuss your initial analysis of the problem. Consider including:
+        \begin{enumerate}
+            \item Dataset characteristics
+            \item Main challenges
+            \item Initial assumptions
+        \end{enumerate}
+
+        \noindent If you need to reference papers, use the citation command: Recent work~\cite{lecun2015deep} suggests..."
+
+        \section{Method}
+        This section should detail your approach. You can use equations to explain your methodology. For example, a simple model representation:
+        \begin{equation}
+            \label{eq:model}
+            f(x) = \text{softmax}(Wx + b)
+        \end{equation}
+
+        \noindent Or a more complex loss function:
+        \begin{equation}
+            \label{eq:loss}
+            \mathcal{L} = -\frac{1}{N}\sum_{i=1}^{N} y_i\log(\hat{y}_i)
+        \end{equation}
+
+        \noindent Reference these equations in your text, like:``As shown in equation~\ref{eq:model}..."
+
+        \section{Experiments}
+        For your experiments, you might want to present your results in tables. Here's an example of a wide table comparing different models:
+
+        \begin{table*}[t]
+            \centering
+            \setlength{\tabcolsep}{3pt}
+            \caption{An example of wide table. Best results are highlighted in \textbf{bold}.}
+            \begin{tabularx}{\textwidth}{lYYYc}
+                \toprule
+                Model & Accuracy & Precision & Recall & ROC AUC\\
+                \midrule
+                VGG18         &  72.20 $\pm$ 3.06    &   94.95 $\pm$ 0.52     &   86.95 $\pm$ 0.55    &   80.16 $\pm$ 0.81\\
+                Custom Model        &  27.71 $\pm$ 3.19    &   75.70 $\pm$ 1.07     &   55.75 $\pm$ 2.16    &   36.60 $\pm$ 1.26\\
+                ResNet18    &  \textbf{89.24 $\pm$ 2.38}    &   \textbf{95.54 $\pm$ 0.49}     &   \textbf{93.43 $\pm$ 1.30}    &   \textbf{91.68 $\pm$ 0.71}\\
+                \bottomrule
+            \end{tabularx}
+            \label{tab:Performance}
+        \end{table*}
+
+        \noindent For more specific measurements, you might use a narrower table:
+    
+        \begin{table}[H]
+            \centering
+            \setlength{\tabcolsep}{3pt}
+            \caption{An example of table. Best results may be highlighted in \textbf{bold}.}
+            \begin{tabularx}{\linewidth}{lY}
+                \toprule
+                Time [$\mu$s] & Distance [mm]\\
+                \midrule
+                22$\pm$4 & 8$\pm$1\\
+                17$\pm$3 & 7$\pm$1\\
+                15$\pm$3 & 6$\pm$1\\
+                13$\pm$2 & 5$\pm$1\\
+                10$\pm$2 & 4$\pm$1\\
+                8$\pm$2 & 3$\pm$1\\
+                5$\pm$1 & 2$\pm$1\\
+                37$\pm$1 & 1$\pm$1\\
+                \bottomrule
+            \end{tabularx}
+            \label{tb:Measurements}
+        \end{table}
+
+        \noindent You can also include figures to visualise your results:
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.75\linewidth]{random.jpeg}
+            \caption{Example figure showing [describe what the figure shows]}
+            \label{fig:results}
+        \end{figure}
+
+        \noindent Reference figures using like:``As shown in Figure~\ref{fig:results}..."
+
+        \section{Results}
+        Present your main findings here. You might want to:
+        \begin{itemize}
+            \item Compare your results with baselines
+            \item Highlight key achievements using \textbf{bold text}
+            \item Explain any unexpected outcomes
+        \end{itemize}
+
+        \section{Discussion}
+        In this section, analyse your results critically. Consider:
+        \begin{itemize}
+            \item Strengths and weaknesses
+            \item Limitations and assumptions
+        \end{itemize}
+
+        \section{Conclusions}
+        Summarise your work and discuss potential future directions. This is where you can:
+        \begin{itemize}
+            \item Restate main contributions
+            \item Suggest improvements
+            \item Propose future work
+        \end{itemize}
+
+        \bibliography{references}
+        \bibliographystyle{abbrv}
+    
+    \end{multicols}
+\end{document}
