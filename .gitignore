@@ -1,1 +1,4 @@
 training_set.npz
+model.py
+*.keras
+*.zip
