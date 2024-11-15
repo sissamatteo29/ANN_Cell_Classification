@@ -6,4 +6,5 @@ matplotlib
 pandas
 scikit-learn
 keras
+keras_cv
 opencv-python
