@@ -13,7 +13,7 @@
 \newcolumntype{Y}{>{\centering\arraybackslash}X}
 \usepackage[left=2.00cm, right=2.00cm, top=2.00cm, bottom=2.00cm]{geometry}
 
-\title{AN2DL Reports Template}
+\title{AN2DL First Homework Report}
 
 \begin{document}
     
@@ -26,26 +26,26 @@
     
     \begin{center}
         % Select between First and Second
-        {\Large \textbf{AN2DL - First/Second Homework Report}}\\
+        {\Large \textbf{AN2DL - First Homework Report}}\\
         \vspace{2mm}
         % Change with your Team Name
-        {\Large \textbf{Team Name}}\\
+        {\Large \textbf{NeuralDropouts}}\\
         \vspace{2mm}
         % Team Members Information
-        {\large Name1 Surname1,}
-        {\large Name2 Surname2,}
-        {\large Name3 Surname3,}
-        {\large Name4 Surname4}\\
+        {\large Pinar Erbil,}
+        {\large Sergio Pardo,}
+        {\large Angela Remolina,}
+        {\large Matteo Sissa}\\
         \vspace{2mm}
         % Codabench Nicknames
-        {Codabench Nickname1,}
-        {Codabench Nickname2,}
-        {Codabench Nickname3,}
+        {perbil,}
+        {sergiopardo,}
+        {angelaremolina,}
         {Codabench Nickname4}\\
         \vspace{2mm}
         % Matriculation Numbers
         {Matricola1,}
-        {Matricola2,}
+        {10985243,}
         {Matricola3,}
         {Matricola4}\\
         \vspace{5mm}
@@ -54,17 +54,31 @@
     \vspace{5mm}
     
     \begin{multicols}{2}
-        \noindent \textit{Note: The following sections represent a suggested structure. Feel free to adapt them to better suit your specific project needs.}
+        \noindent \textit{Note: The following sections  represent a suggested structure. Feel free to adapt them to better suit your specific project needs.}
         
         \section{Introduction}
-        In this section, you should present your project's context and objectives. You might want to:
-        \begin{itemize}
-            \item Define the problem (\textit{you may use italics to highlight definitions})
-            \item State your goals (\textbf{emphasise key points with bold})
-            \item Outline your approach
-        \end{itemize}
+        Artificial intelligence has revolutionized the world we live in, the way we look at things, and the problems we aim to solve. From healthcare to transportation, AI-powered systems are enhancing efficiency, accuracy, and accessibility in ways previously unimaginable. It enables doctors to diagnose diseases faster, automates mundane tasks to free up human creativity, and powers technologies like self-driving cars and smart assistants among other advancements. 
+        \newline
 
-        \noindent For instance, you might write: ``This project focuses on \textit{image classification} using \textbf{deep learning} techniques."
+        Additionally, technologies like deep learning and deep neural networks have allowed huge improvements in the computer vision field. Now, systems with super human performance have taken over and are now the industry standard.
+        \newline
+        
+        Medical Image Analysis falls in-between these two areas, it implements cutting edge deep learning models to boost the capability humanity has of studying our body and its composition. This is the context of the present project. Its aim is to \textbf{classify 96x96 RGB images of blood cells among 8 possible classes}. Therefore, the goals our team set were; 
+        \begin{enumerate}
+            \item Understand the given dataset.
+            \item Build a deep learning model that is able to make predictions on the dataset. 
+            \item Achieve a prediction accuracy of at least 80\% .
+        \end{enumerate}
+
+        In order to achieve this, we devised the following approach:
+        \begin{itemize}
+            \item Explore the data with statistics and some visualization techniques that will allow the detection of outliers and understand the structure of the data.
+            \item Given the size of the dataset, perform data augmentation to have a wider dataset that will allow the model to be more robust when doing predictions.
+            \item Build a model from scratch or by using \textbf{transfer learning} techniques with pre-trained models to train it on the training set.
+            \item Test all these models in the CodaBench platform to evaluate their performance and assess possible changes.
+        \end{itemize}
+        .
+
         
         \section{Problem Analysis}
         Here you can discuss your initial analysis of the problem. Consider including:
