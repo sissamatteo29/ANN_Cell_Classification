@@ -1,0 +1,32 @@
+\begin{thebibliography}{1}
+
+\bibitem{jolliffe2016principal}
+I.~T. Jolliffe and J.~Cadima.
+\newblock {\em Principal Component Analysis}.
+\newblock Springer, 2016.
+
+\bibitem{liu2022convnext}
+Z.~Liu, H.~Mao, C.-Y. Wu, C.~Feichtenhofer, T.~Darrell, and S.~Xie.
+\newblock A convnet for the 2020s.
+\newblock In {\em Proceedings of the IEEE/CVF Conference on Computer Vision and
+  Pattern Recognition (CVPR)}, 2022.
+
+\bibitem{fouriermix}
+Y.~Rong, L.~Zhang, and C.~Liu.
+\newblock Fouriermix: Resolving dataset bias via fourier data augmentation.
+\newblock {\em arXiv preprint arXiv:2106.01287}, 2021.
+
+\bibitem{cutmix}
+S.~Yun, D.~Han, S.~J. Oh, S.~Chun, J.~Choe, and Y.~Yoo.
+\newblock Cutmix: Regularization strategy to train strong classifiers with
+  localizable features.
+\newblock In {\em Proceedings of the IEEE/CVF International Conference on
+  Computer Vision (ICCV)}, pages 6023--6032, 2019.
+
+\bibitem{mixup}
+H.~Zhang, M.~Cisse, Y.~N. Dauphin, and D.~Lopez-Paz.
+\newblock mixup: Beyond empirical risk minimization.
+\newblock In {\em International Conference on Learning Representations (ICLR)},
+  2018.
+
+\end{thebibliography}
