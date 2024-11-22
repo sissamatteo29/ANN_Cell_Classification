@@ -12,7 +12,7 @@
 \usepackage{hyperref}
 \newcolumntype{Y}{>{\centering\arraybackslash}X}
 \usepackage[left=2.00cm, right=2.00cm, top=2.00cm, bottom=2.00cm]{geometry}
-
+\usepackage[table,xcdraw]{xcolor}
 \title{AN2DL First Homework Report}
 
 \begin{document}
@@ -44,9 +44,9 @@
         {matteosissa}\\
         \vspace{2mm}
         % Matriculation Numbers
-        {Matricola1,}
+        {244638,}
         {243066,}
-        {Matricola3,}
+        {242814,}
         {247064}\\
         \vspace{5mm}
         \today
@@ -63,57 +63,72 @@ Medical Image Analysis falls in-between these two areas, it implements cutting e
         \section{Problem Analysis}
 
 Classifying blood cells is a complex task due to the subtle differences among various cell types, which can lead to significant challenges in accurate identification.\\
-	The analysis of the problem starts with the inspection of the available dataset which is composed of 13759 96x96 RGB, all labelled with an integer value ranging between 0 and 7 to represent one among 8 possible classes of blood cells, respectively Basophil, Eosinophil, Erythroblast, Immature granulocytes, Lymphocyte, Monocyte, Neutrophil, Platelet.\\
-	By observing the dataset and acquiring some knowledge on the domain of the problem (blood cell classification), it was clear that the task was complex because of multiple factors also coming from the field of application. For instance, intra-class variability is not always high for all classes. This means some cells belonging to different classes might appear very similar under the microscope, making it challenging to differentiate them, even for experts..\\	
-	 As for the dataset size, it was uncertain at first whether it would have been possible to rely solely on the original data without any augmentation technique. The first experimentations were therefore conducted without any augmentation to verify the system response and performance.\\	 
-	The correctness of the labels provided in the original dataset, presumably derived from expert knowledge, was assumed throughout the entirety of the project.
+	The analysis of the problem starts with the inspection of the available dataset which is composed of 13759 96x96 RGB, all labelled with an integer value ranging between 0 and 7 to representing the 8 classes of blood cells, respectively Basophil, Eosinophil, Erythroblast, Immature granulocytes, Lymphocyte, Monocyte, Neutrophil, Platelet.\\
+	%By observing the dataset and acquiring some knowledge on the domain of the problem (blood cell classification), it was clear that the task was complex because of multiple factors also coming from the field of application. For instance, intra-class variability is not always high for all classes. This means some cells belonging to different classes might appear very similar under the microscope, making it challenging to differentiate them, even for experts..\\	
+	The correctness of the labels provided in the original dataset, presumably derived from expert knowledge, was assumed throughout the project.
+    As for the dataset size, it was uncertain at first whether it would have been possible to rely solely on the original data without any augmentation technique. The first experimentations were therefore conducted without any augmentation to verify the system response and performance.
 	 
 
         \section{Method}
         \label{sec:method}
         
-        To address the classification problem, the following methodology was employed. First off, the dataset was inspected using Principal Component Analysis (PCA) to identify and remove outliers and erroneous data points.\\
-        The cleaned data set was preprocessed by first splitting it into training set (90\%), validation set (5\%) and test set (5\%) and then applying augmentation techniques to increment the number of samples. Augmentation turned out to be a key step to mitigate overfitting, given the variability in imaging conditions and the limited size of the original dataset. The transformations applied on the original data were designed to mimic common variations that can result from image acquisition at a microscope (like color degeneration or random saturation). \\
-        For training purposes, the initial labels in the dataset were transformed into one-hot encoding vectors. \\
-        The augmented dataset was then used for training the model. The chosen architecture leverages transfer learning techniques. This approach is advantageous as it exploits the strong feature extraction capabilities of a pre-trained large model that are crucial for distinguishing subtle differences in blood cells with a limited dataset.\\
-        ConvNextXLarge \cite{liu2022convnext}, trained on the ImageNet dataset, was selected to provide the feature extraction network for the classifier of this project. It is well-suited for the goal because of its hierarchical feature extraction capabilities, able to capture fine details both at low and high level, and its robustness to image noise, very common in biomedical imaging. \\
+        To address the classification problem, the following methodology was employed. First, the dataset was inspected using \textbf{Principal Component Analysis (PCA)}  \cite{jolliffe2016principal} to identify and remove outliers and erroneous data points.\\ 
+        The cleaned dataset was split into training set (90\%), validation set (5\%) and test set (5\%) and then augmentation techniques were applied to increment the number of samples in the training set. \\
+        \textbf{Augmentation} turned out to be a key step to mitigate overfitting, given the variability in imaging conditions and the limited size of the original dataset. 
+        So, the augmentation step of the dataset was thoroughly redesigned, applying more advanced techniques like FourierMix \cite{fouriermix}, and CutMix \cite{cutmix}.
+        Later, augmented dataset and one-hot encoded labels were fed to the model for training. \\
+        %For training purposes, the initial labels in the dataset were transformed into one-hot encoding vectors. \\ 
+        Instead of training a custom model from scratch, \textbf{transfer learning} was applied.
+        This approach is advantageous as it exploits the strong feature extraction capabilities of a pre-trained large model that are crucial for distinguishing subtle differences in blood cells with a limited dataset.\\
+        ConvNextXLarge \cite{liu2022convnext}, trained on the ImageNet dataset \cite{deng2009imagenet}, was selected to provide the feature extraction network for the classifier of this project. It is well-suited for the goal because of its hierarchical feature extraction capabilities, able to capture fine details both at low and high level, and its robustness to image noise, very common in biomedical imaging. \\
         At the input side, the feature extraction network was enriched with an input layer compliant with the image size (96x96x3) and an additional augmentation layer that applies random transformations as data is fed into the system. This enhances variability in the dataset and mitigates overfitting. \\
-        At the end of the ConvNextXLarge feature extraction network, there is a custom neural network classifier with three additional dense layers and a final output layer composed by eight output neurons corresponding to the classes. The softmax function is used to normalise the output layer to a probability distribution over the classes. Dropout and batch normalisation techniques are also applied in these last layers to make the model faster to train and more robust.
-        This completes the description of the model design. \\
-        As for the training process, it was split into two parts. Initially, the weights of the feature extraction network (ConvNextXLarge) were frozen to ensure stability and allow the training of the classifier network at the output of the model. The loss function adopted is categorical cross-entropy and backpropagation with Adaptive moment estimation (Adam) is used to update the weights. To complete the setup of the training procedure, the number of epochs was set to 10 and the batch size to 64, which seemed reasonable values as they were yielding good experimental results. Early-stopping was also incorporated in the solution, to prevent overfitting. \\
-        The second training phase involved fine tuning the ConvNextXLarge layers to fit the specific problem at hand as well as possible. All the convolutional and depth-wise convolutional layers from ConvNextXLarge were unfrozen and set as trainable, apart from the ones belonging to the very first 124 layers of the network. The second training procedure was run with the same options and techniques as the first one.\\
+        At the end of the ConvNextXLarge feature extraction network, there is a \textbf{custom neural network classifier} with three additional dense layers and a final output layer composed by eight output neurons corresponding to each class. The softmax function is used to normalise the output layer to a probability distribution over the classes. Dropout and batch normalisation techniques are also applied in these last layers to make the model faster to train and more robust. \\
+        %This completes the description of the model design. \\
+        The training part was split into two parts: transfer learning and fine-tuning. In the \textbf{transfer learning} phase, the weights of the feature extraction network (ConvNextXLarge) were frozen to ensure stability and allow the training of the classifier network at the output of the model. The loss function adopted is categorical cross-entropy and backpropagation with Adaptive moment estimation (Adam) is used to update the weights. To complete the setup of the training procedure, the number of epochs was set to 15 and the batch size to 64, \color{red}which seemed reasonable values as they were yielding good experimental results. \color{black}
+        Early-stopping was also incorporated in the solution, to prevent overfitting. \\
+        %The second training phase involved \textbf{fine-tuning} the ConvNextXLarge layers to fit the specific problem at hand as well as possible. All the convolutional and depth-wise convolutional layers from ConvNextXLarge were unfrozen and set as trainable, apart from the ones belonging to the very first 124 layers of the network. The second training procedure was run with the same options and techniques as the first one.\\
+      The second training phase involved \textbf{fine-tuning}. The ConvNextXLarge layers were unfrozen and set as trainable to fit the specific problem. All the convolutional and depth-wise convolutional layers but the first 124 of them, were unfrozen and trained. Training procedure followed the same settings as the first training. \\    
         The final result was finally evaluated on the test set, measuring accuracy, precision, recall, f1 score and plotting a confusion matrix to examine the outcome.
 
-
         \section{Experiments}
-		Experimentation started from very basic convolutional neural networks with a few layers to assess the complexity of the problem and identify the main concerns to be addressed. The initial trials only had two convolutional layers and a single dense layer at the end and were working with unclean data. Indeed the initial accuracy outcomes were below 20\%.\\
-		Nevertheless, these attempts highlighted some of the most important aspects to be addressed, first of all the need to better inspect the data and also to have a larger amount of samples to control overfitting. PCA \cite{jolliffe2016principal} was therefore employed to detect erroneous data points and remove them, while various augmentation techniques were devised to tailor the production of augmented data to the needs of the network. In particular, the transformations applied on the images were selected to mimic the common variations and characteristics of biomedical microscopy imaging. \\
-		Even with the augmented and clean dataset, the initial basic model was still performing very poorly, with an accuracy below 20\%.\\
-		As a possible solution, transfer learning was considered, to enhance the recognition abilities of the model especially on subtle differences, which were probably the cause of the bad performance yielded by a network with a few layers, not really capable of detecting minimal differences. VGG and ConvNextXLarge were identified as two eligible options. They were both used as feature extraction networks, completing them with an input layer suitable for the input images of the problem and a classification network at the end composed of three dense fully-connected layers. Initially, to verify whether using transfer learning could lead to better performances, both models were trained just with the cleaned dataset (without any augmentation) and without fine tuning. The results were much better than the previous ones, as the accuracy metric resulted 25\% for the VGG network \(but 49\% when fine tuned\) and 74\% for the ConvNextXLarge one. There was still space for improvement, but this experiment showed that employing transfer learning with ConvNextXLarge could lead to a very sound model.\\
-		Putting together the pieces, it was clear that to enhance the capabilities of the model further, it was necessary to use more data for training and then fine tuning the model correctly. So the augmentation step of the dataset was thoroughly redesigned, applying more advanced techniques like FourierMix \cite{fouriermix}, CutMix \cite{cutmix} and MixUp \cite{mixup}. The training phase for the model was further split into two parts, to accommodate for the fine tuning process at the end, as explained in the \hyperref[sec:method]{Method section}.\\
-		The result was better than the previous attempts as expected, reaching 84\% accuracy.
-		 \hyperref[table:performances]{This table} summarises the accuracy metrics achieved by the models described in this section, going from top to bottom in chronological order:
-   
-
+		Experimentation first started from a very basic convolutional neural networks with a few layers to assess the complexity of the problem and identify the main concerns to be addressed. The initial trials only had two convolutional layers and a single dense layer at the end, and were working with unclean data. 
+        Although, the local training results were promising, on CodaBench the accuracy were below 20\%.
+        %Indeed, the initial accuracy outcomes were below 20\%.\\
+        These attempts highlighted the importance of inspecting the data in detail and increasing the amount to control overfitting. \\  
+		%These attempts highlighted some of the most important aspects to be addressed, first of all the need to better inspect the data and also to have a larger amount of samples to control overfitting.
+        PCA \cite{jolliffe2016principal} was therefore employed to detect outlier data points and remove them, while various augmentation techniques were devised to tailor the production of augmented data to the needs of the network. \\
+        %In particular, the transformations applied to the images were selected to mimic the common variations and characteristics of biomedical microscopy imaging. \\
+        \color{red} should we put the memes here? and maybe the pca plot and explain a little bit more \color{black}\\
+		%Even with the clean and augmented dataset, the initial basic model was still performing very poorly, with an accuracy below 20\%.\\
+		%As a possible solution, instead of training a model from scratch, transfer learning was considered. 
+        %to enhance the recognition abilities of the model especially on subtle differences, which were probably the cause of the bad performance yielded by a network with a few layers, not really capable of detecting minimal differences. \\
+        Then transfer learning was implemented using VGG \cite{simonyan2014very}, ConvNextBase \cite{liu2022convnet}, ConvNextXLarge\cite{liu2022convnet} as possible model options. 
+        They were all used as feature extraction networks, completing them with an input layer suitable for the input images of the problem and a classification network at the end composed of three dense fully-connected layers. \\
+        Several different settings were employed while using these models. Initially, simple models with no augmentation were implemented. Then, fine-tuning and augmentation were utilised in the pipeline for the more complex models. All the results are presented in Table \ref{tab:Performance} with their corresponding settings. \\
+        %Initially, to verify whether using transfer learning could lead to better performances, both models were trained just with the cleaned dataset (without any augmentation) and without fine tuning. The results were much better than the previous ones, as the accuracy metric resulted 25\% for the VGG network \(but 49\% when fine tuned\) and 74\% for the ConvNextXLarge one. There was still space for improvement, but this experiment showed that employing transfer learning with ConvNextXLarge could lead to a very sound model.\\
+        %Putting together the pieces, it was clear that to enhance the capabilities of the model further, it was necessary to use more data for training and then fine tuning the model correctly. So the augmentation step of the dataset was thoroughly redesigned, applying more advanced techniques like FourierMix \cite{fouriermix}, CutMix \cite{cutmix} and MixUp \cite{mixup}. The training phase for the model was further split into two parts, to accommodate for the fine tuning process at the end, as explained in the \hyperref[sec:method]{Method section}.\\
+		%The result was better than the previous attempts as expected, reaching 84\% accuracy.
+		 %    Table \ref{tab:Performance} Summarises the accuracy metrics achieved by the models described in this section, going from top to bottom in chronological order:
+        From the results presented in Table \ref{tab:Performance}, it can be concluded that using transfer learning leads to better performances. Although ConvNext models outperformed VGG, there is no clear winner between the ConvNext models.  \color{red} MORE DISCUSSION HERE AFTER XLARGE COMES \color{black} \\
+        
         \begin{table*}[t]
-            \centering
-            \label{table:performances}
-            \setlength{\tabcolsep}{3pt}
-            \caption{Summary of models accuracy}
-            \begin{tabularx}{\textwidth}{lYYYc}
-                \toprule
-                Model & Accuracy & Precision & Recall & ROC AUC\\
-                \midrule
-                Base model \\ (unclean data)         &  72.20 $\pm$ 3.06    &   94.95 $\pm$ 0.52     &   86.95 $\pm$ 0.55    &   80.16 $\pm$ 0.81\\
-                Base model \\ (clean data + augmentation)        &  27.71 $\pm$ 3.19    &   75.70 $\pm$ 1.07     &   55.75 $\pm$ 2.16    &   36.60 $\pm$ 1.26\\
-                VGG \\ (clean data)    &  \textbf{89.24 $\pm$ 2.38}    &   \textbf{95.54 $\pm$ 0.49}     &   \textbf{93.43 $\pm$ 1.30}    &   \textbf{91.68 $\pm$ 0.71}\\
-                ConvNextXLarge \\ (clean data)    &  \textbf{89.24 $\pm$ 2.38}    &   \textbf{95.54 $\pm$ 0.49}     &   \textbf{93.43 $\pm$ 1.30}    &   \textbf{91.68 $\pm$ 0.71}\\
-                ConvNextXLarge \\ (clean data, augmentation, fine tuning)    &  \textbf{89.24 $\pm$ 2.38}    &   \textbf{95.54 $\pm$ 0.49}     &   \textbf{93.43 $\pm$ 1.30}    &   \textbf{91.68 $\pm$ 0.71}\\
-                \bottomrule
-            \end{tabularx}
-            \label{tab:Performance}
-        \end{table*}
-
+ \hskip-1.5cm
+\begin{tabular}{lccc|cccc|c|}
+\cline{5-9}
+                                                                                     & \multicolumn{1}{l}{}                                       & \multicolumn{1}{l}{}                                               & \multicolumn{1}{l|}{} & \multicolumn{4}{c|}{\cellcolor[HTML]{C0C0C0}Local Results}                                                                                                                                                      & \multicolumn{1}{l|}{\cellcolor[HTML]{C0C0C0}CodaBench} \\ \hline
+\rowcolor[HTML]{C0C0C0} 
+\multicolumn{1}{|l|}{\cellcolor[HTML]{C0C0C0}\textbf{Model}}                         & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}\textbf{Data}} & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}\textbf{Augmentation}} & \textbf{Fine-tuning}  & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}\textbf{Accuracy}} & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}\textbf{Precision}} & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}\textbf{Recall}} & \textbf{F1}   & \textbf{Accuracy}                                      \\ \hline
+\multicolumn{1}{|l|}{Base Model}                                                     & \multicolumn{1}{c|}{Unclean}                               & \multicolumn{1}{c|}{No}                                            & No                    & \multicolumn{1}{c|}{0.7}                                       & \multicolumn{1}{c|}{0.72}                                       & \multicolumn{1}{c|}{0.7}                                     & 0.68          & 0.14                                                   \\ \hline
+\multicolumn{1}{|l|}{VGG}                                                            & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{No}                                            & Yes                   & \multicolumn{1}{c|}{0.87}                                      & \multicolumn{1}{c|}{0.91}                                       & \multicolumn{1}{c|}{0.87}                                    & 0.88          & 0.49                                                   \\ \hline
+\multicolumn{1}{|l|}{ConvNextBase}                                                   & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{Yes}                                           & Yes                   & \multicolumn{1}{c|}{0.97}                                      & \multicolumn{1}{c|}{0.97}                                       & \multicolumn{1}{c|}{0.97}                                    & 0.97          & \textbf{0.85}                                          \\ \hline
+\multicolumn{1}{|l|}{ConvNextLarge}                                                  & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{Yes}                                           & Yes                   & \multicolumn{1}{c|}{\textbf{0.98}}                             & \multicolumn{1}{c|}{\textbf{0.98}}                              & \multicolumn{1}{c|}{\textbf{0.98}}                           & \textbf{0.98} & \textbf{0.85}                                          \\ \hline
+\multicolumn{1}{|l|}{ConvNextXLarge}                                                 & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{No}                                            & No                    & \multicolumn{1}{c|}{0.95}                                      & \multicolumn{1}{c|}{0.95}                                       & \multicolumn{1}{c|}{0.95}                                    & 0.95          & 0.74                                                   \\ \hline
+\multicolumn{1}{|l|}{ConvNextXLarge}                                                 & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{Yes}                                           & Yes                   & \multicolumn{1}{c|}{}                                          & \multicolumn{1}{c|}{}                                           & \multicolumn{1}{c|}{}                                        &               &                                                        \\ \hline
+\multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}Block\\ ConvNextXlarge\end{tabular}} & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{Yes}                                           & Yes                   & \multicolumn{1}{c|}{}                                          & \multicolumn{1}{c|}{}                                           & \multicolumn{1}{c|}{}                                        &               &                                                        \\ \hline
+\end{tabular}
+        \caption{Summary of the models' performances}
+        \label{tab:Performance}
+\end{table*}
         
 
 
