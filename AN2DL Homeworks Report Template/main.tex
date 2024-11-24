@@ -1,4 +1,4 @@
-\documentclass[11pt]{article}
+\documentclass[10pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{amsmath}
@@ -11,6 +11,13 @@
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{float}
+\usepackage{stfloats}
+\usepackage{placeins}
+\usepackage{wrapfig}
+\usepackage{caption}
+\usepackage[absolute,overlay]{textpos}
+\setlength{\TPHorizModule}{1cm} % Horizontal unit (adjust as needed)
+\setlength{\TPVertModule}{1cm}  % Vertical unit (adjust as needed)
 \newcolumntype{Y}{>{\centering\arraybackslash}X}
 \usepackage[left=2.00cm, right=2.00cm, top=2.00cm, bottom=2.00cm]{geometry}
 \usepackage[table,xcdraw]{xcolor}
@@ -58,8 +65,7 @@
     
     \section{Introduction}
         
-        From healthcare to transportation, AI-powered systems are enhancing efficiency, accuracy, and accessibility in ways previously unimaginable. Technologies like deep learning and deep neural networks have also allowed huge improvements in the computer vision field. 
-        \\
+        From healthcare to transportation, AI-powered systems are enhancing efficiency, accuracy, and accessibility in ways previously unimaginable. Technologies like deep learning and deep neural networks have also allowed huge improvements in the computer vision field.
         Medical Image Analysis falls in-between these two areas, it implements cutting edge deep learning models to boost the capability humanity has of studying our body and its composition. This is the context of the present project, which aims to \textbf{classify images of blood cells among 8 possible classes}. 
 
         
@@ -74,7 +80,7 @@
         \label{sec:method}
         %To address the classification problem, the following methodology was employed.
         
-        \subsection{Data wrangling and augmentation}
+        \subsection{Data wrangling}
         \label{sec:wrangling}
         First, the dataset was inspected using \textbf{Principal Component Analysis (PCA)}  \cite{jolliffe2016principal} to identify outliers and erroneous data points. In this analysis, it was clear that the points located farther from the origin were identified as outliers. See figure \ref{fig:fig1}.       
 
@@ -138,6 +144,7 @@
         These attempts highlighted the importance of inspecting the data in detail and increasing the amount to control overfitting. \\  
         PCA was therefore employed as it was mentioned on section \ref{sec:wrangling}.
 
+        
         \subsection{Mid-stage experiments}
 
         After establishing a clean data set, transfer learning was implemented using VGG \cite{simonyan2014very}, and the ConvNext family (Base, Large and XLarge) \cite{liu2022convnet} as possible model options. 
@@ -149,34 +156,14 @@
         \subsection{Late experiments}
 
          In the late-stage experiments, it became evident that ConvNext models consistently outperformed VGG. However, there was no definitive superiority among the ConvNext models themselves, as they all demonstrated comparable levels of accuracy. Upon closer analysis, it was determined that the key factor influencing performance was the augmentation techniques applied.
-         To investigate this further, a final phase of experimentation was conducted where augmentation strategies were significantly enhanced, selecting the best base model so far (ConvNextXLarge). Due to memory constraints, it was not feasible to apply a large number of augmentations simultaneously. Therefore, a block-based approach was implemented. In this method, augmented samples were sequentially fed into the model, and once utilized, they were removed from memory to make room for subsequent batches. This approach allowed for a more extensive exploration of augmentation effects while adhering to the system's limitations.
+         To investigate this further, a final phase of experimentation was conducted where augmentation strategies were significantly enhanced, selecting the best base model so far (ConvNextXLarge). Due to memory constraints, it was not feasible to apply a large number of augmentations simultaneously. Therefore, a block-based approach was implemented. In this method, augmented samples were sequentially fed into the model, and once utilized, they were removed from memory to make room for subsequent batches. This approach allowed for a more extensive exploration of augmentation effects while adhering to the system's limitations. % And this indeed result on a higher accuracy %Uncomment if true
         
-        \begin{table*}[t]
- \hskip-1.5cm
-\begin{tabular}{lccc|cccc|c|}
-\cline{5-9}
-                                                                                     & \multicolumn{1}{l}{}                                       & \multicolumn{1}{l}{}                                               & \multicolumn{1}{l|}{} & \multicolumn{4}{c|}{\cellcolor[HTML]{C0C0C0}Local Results}                                                                                                                                                      & \multicolumn{1}{l|}{\cellcolor[HTML]{C0C0C0}CodaBench} \\ \hline
-\rowcolor[HTML]{C0C0C0} 
-\multicolumn{1}{|l|}{\cellcolor[HTML]{C0C0C0}\textbf{Model}}                         & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}\textbf{Data}} & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}\textbf{Augmentation}} & \textbf{Fine-tuning}  & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}\textbf{Accuracy}} & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}\textbf{Precision}} & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}\textbf{Recall}} & \textbf{F1}   & \textbf{Accuracy}                                      \\ \hline
-\multicolumn{1}{|l|}{Base Model}                                                     & \multicolumn{1}{c|}{Unclean}                               & \multicolumn{1}{c|}{No}                                            & No                    & \multicolumn{1}{c|}{0.7}                                       & \multicolumn{1}{c|}{0.72}                                       & \multicolumn{1}{c|}{0.7}                                     & 0.68          & 0.14                                                   \\ \hline
-\multicolumn{1}{|l|}{VGG}                                                            & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{No}                                            & Yes                   & \multicolumn{1}{c|}{0.87}                                      & \multicolumn{1}{c|}{0.91}                                       & \multicolumn{1}{c|}{0.87}                                    & 0.88          & 0.49                                                   \\ \hline
-\multicolumn{1}{|l|}{ConvNextBase}                                                   & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{Yes}                                           & Yes                   & \multicolumn{1}{c|}{0.97}                                      & \multicolumn{1}{c|}{0.97}                                       & \multicolumn{1}{c|}{0.97}                                    & 0.97          & \textbf{0.85}                                          \\ \hline
-\multicolumn{1}{|l|}{ConvNextLarge}                                                  & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{Yes}                                           & Yes                   & \multicolumn{1}{c|}{\textbf{0.98}}                             & \multicolumn{1}{c|}{\textbf{0.98}}                              & \multicolumn{1}{c|}{\textbf{0.98}}                           & \textbf{0.98} & \textbf{0.85}                                          \\ \hline
-\multicolumn{1}{|l|}{ConvNextXLarge}                                                 & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{No}                                            & No                    & \multicolumn{1}{c|}{0.95}                                      & \multicolumn{1}{c|}{0.95}                                       & \multicolumn{1}{c|}{0.95}                                    & 0.95          & 0.74                                                   \\ \hline
-\multicolumn{1}{|l|}{ConvNextXLarge}                                                 & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{Yes}                                           & Yes                   & \multicolumn{1}{c|}{}                                          & \multicolumn{1}{c|}{}                                           & \multicolumn{1}{c|}{}                                        &               & 0.87                                                       \\ \hline
-\multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}Block\\ ConvNextXlarge\end{tabular}} & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{Yes}                                           & Yes                   & \multicolumn{1}{c|}{}                                          & \multicolumn{1}{c|}{}                                           & \multicolumn{1}{c|}{}                                        &               &                                                        \\ \hline
-\end{tabular}
-        \caption{Summary of the models' performances}
-        \label{tab:Performance}
-\end{table*}
-        
-
-
         
     \section{Results}
 
-        All the detailed results of the performed experiments are presented in table \ref{tab:Performance} with their corresponding settings. 
+        All the detailed results of the performed experiments are presented in table \ref{fig:Performance} with their corresponding settings.
         
+
 		The final model presented in this paper achieved an overall \textbf{accuracy of 87\%}
         % todo change this value after matteo's model is finished
         on test data. Compared to the initial attempts that were made with very simple models, this shows an improvement of \textbf{around 70 percentage points} throughout the design process for this solution. The two most important contributions to this achievement can be attributed to using \textbf{augmentation} and \textbf{transfer learning} techniques to craft a precise solution for the problem at hand.
@@ -190,18 +177,71 @@
         The final achievement shows a robust solution to distinguish blood cells even in the case of classes with very low variability and subtle differences. At the same time, the reliance on pre-trained weights from ImageNet, a non-biomedical dataset, could limit the model's ability to capture domain-specific features, particularly those unique to blood cell microscopy images. 
 
         
+
     \section{Conclusions}
     
-    In this work, we proposed a robust solution for blood cell classification leveraging transfer learning with the ConvNeXt-XLarge backbone and advanced data augmentation techniques. The approach effectively addressed challenges, achieving competitive performance across most cell types.
+    In this work, we proposed a robust solution for blood cell classification leveraging transfer learning with the ConvNeXt-XLarge backbone and advanced data augmentation techniques. 
+    
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/table.png} 
+        \label{fig:Performance}
+        % \captionof{figure}{text}
+    \end{center}
+
+    
+    The approach effectively addressed challenges, achieving competitive performance across most cell types.
     It was proven that by carefully balancing class weights and fine-tuning key hyperparameters (such as the number of epochs, batch size, patience, ...) it was possible to achieve the same accuracy (85\%) with a ConvNext-Base model as with a ConvNext-Large model. Given that ConvNext-Base is significantly lighter and more computationally efficient, it presents a compelling alternative to ConvNext-Large, offering equivalent performance while requiring fewer resources. This underscores the effectiveness of optimization techniques in maximizing the efficiency of machine learning models.
-    \\
+    
+    
     Future work could focus on generating synthetic data for rare classes or collecting additional images for easier and more precise training. It is also possible to experiment with lighter models for transfer learning and verify the change in performance.
+
+    
+    \section{Team contributions}
+    \textbf{Angela} focused on data wrangling and implementing initial data augmentation techniques, including edge highlighting and developing the base model.
+    \textbf{Pinar} worked on the ConvNext family models (Base, Large and XLarge models), applying fine-tuning to improve performance. 
+    \textbf{Sergio} contributed by building and fine-tuning all VGG-based models, aiding comparative analysis. 
+    \textbf{Matteo} tackled memory constraints through on-the-fly augmentation, optimizing the ConvNextXLarge model for better results.
+    \textbf{All team members} collaborated on the project equally ensuring a balanced workload and a cohesive submission.
+
+    
+    \clearpage
+
+% \FloatBarrier
+% \begin{table*}[ht!]
+%  \hskip-1.5cm
+% \begin{tabular}{lccc|cccc|c|}
+% \cline{5-9}
+%                                                                                      & \multicolumn{1}{l}{}                                       & \multicolumn{1}{l}{}                                               & \multicolumn{1}{l|}{} & \multicolumn{4}{c|}{\cellcolor[HTML]{C0C0C0}Local Results}                                                                                                                                                      & \multicolumn{1}{l|}{\cellcolor[HTML]{C0C0C0}CodaBench} \\ \hline
+% \rowcolor[HTML]{C0C0C0} 
+% \multicolumn{1}{|l|}{\cellcolor[HTML]{C0C0C0}\textbf{Model}}                         & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}\textbf{Data}} & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}\textbf{Augmented}} & \textbf{Fine-tuning}  & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}\textbf{Accuracy}} & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}\textbf{Precision}} & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}\textbf{Recall}} & \textbf{F1}   & \textbf{Accuracy}                                      \\ \hline
+% \multicolumn{1}{|l|}{Base Model}                                                     & \multicolumn{1}{c|}{Unclean}                               & \multicolumn{1}{c|}{No}                                            & No                    & \multicolumn{1}{c|}{0.7}                                       & \multicolumn{1}{c|}{0.72}                                       & \multicolumn{1}{c|}{0.7}                                     & 0.68          & 0.14                                                   \\ \hline
+% \multicolumn{1}{|l|}{VGG}                                                            & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{No}                                            & Yes                   & \multicolumn{1}{c|}{0.87}                                      & \multicolumn{1}{c|}{0.91}                                       & \multicolumn{1}{c|}{0.87}                                    & 0.88          & 0.49                                                   \\ \hline
+% \multicolumn{1}{|l|}{ConvNextBase}                                                   & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{Yes}                                           & Yes                   & \multicolumn{1}{c|}{0.97}                                      & \multicolumn{1}{c|}{0.97}                                       & \multicolumn{1}{c|}{0.97}                                    & 0.97          & 0.85                                          \\ \hline
+% \multicolumn{1}{|l|}{ConvNextLarge}                                                  & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{Yes}                                           & Yes                   & \multicolumn{1}{c|}{0.98}                             & \multicolumn{1}{c|}{0.98}                              & \multicolumn{1}{c|}{0.98}                           & 0.98 & 0.85                                          \\ \hline
+% \multicolumn{1}{|l|}{ConvNextXLarge}                                                 & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{No}                                            & No                    & \multicolumn{1}{c|}{0.95}                                      & \multicolumn{1}{c|}{0.95}                                       & \multicolumn{1}{c|}{0.95}                                    & 0.95          & 0.74                                                   \\ \hline
+% \multicolumn{1}{|l|}{ConvNextXLarge}                                                 & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{Yes}                                           & Yes                   & \multicolumn{1}{c|}{0.98}                                          & \multicolumn{1}{c|}{0.98}                                           & \multicolumn{1}{c|}{0.98}                                        & 0.98              & \textbf{0.87}                                                       \\ \hline
+% \multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}Block\\ ConvNextXlarge\end{tabular}} & \multicolumn{1}{c|}{Clean}                                 & \multicolumn{1}{c|}{Yes}                                           & Yes                   & \multicolumn{1}{c|}{0.99}                                          & \multicolumn{1}{c|}{0.99}                                           & \multicolumn{1}{c|}{0.99}                                        & 0.99              &    0.79                                                    \\ \hline
+% \end{tabular}
+%         \caption{Summary of the models' performances}
+%         % \label{tab:Performance}
+% \end{table*}
+
+
+
+
+% \FloatBarrier        
+
 
         
 
 
-        \bibliography{references}
-        \bibliographystyle{abbrv}
+    \bibliography{references}
+    \bibliographystyle{abbrv}
+
+    
+
+    
+    
     
     
     \end{multicols}
